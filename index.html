@@ -181,8 +181,7 @@
     .qr-code {
       width: 320px;
       height: 320px;
-      background: 
-        radial-gradient(circle at center, #f5f5f5 0%, #e0e0e0 100%);
+      background: white;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -193,41 +192,11 @@
       border: 2px solid #4CAF50;
     }
     
-    .qr-pattern {
-      position: absolute;
+    .qr-code img {
       width: 100%;
       height: 100%;
-      background: 
-        linear-gradient(45deg, #4CAF50 25%, transparent 25%, transparent 75%, #4CAF50 75%),
-        linear-gradient(45deg, #4CAF50 25%, transparent 25%, transparent 75%, #4CAF50 75%);
-      background-size: 30px 30px;
-      background-position: 0 0, 15px 15px;
-      opacity: 0.1;
-    }
-    
-    .qr-placeholder {
-      text-align: center;
-      color: #333;
-      z-index: 1;
-    }
-    
-    .qr-placeholder i {
-      font-size: 5rem;
-      color: #4CAF50;
-      margin-bottom: 20px;
-      filter: drop-shadow(0 2px 5px rgba(0,0,0,0.2));
-    }
-    
-    .qr-placeholder p {
-      font-weight: 700;
-      font-size: 1.3rem;
-      margin-bottom: 5px;
-    }
-    
-    .qr-placeholder .subtext {
-      font-size: 1rem;
-      font-weight: 500;
-      opacity: 0.8;
+      object-fit: cover;
+      border-radius: 12px;
     }
     
     .instructions {
@@ -405,12 +374,7 @@
           
           <div class="qr-container">
             <div class="qr-code">
-              <div class="qr-pattern"></div>
-              <div class="qr-placeholder">
-                <i class="fas fa-qrcode"></i>
-                <p>FITSTREAK APP</p>
-                <p class="subtext">Scan with your camera</p>
-              </div>
+              <img src="https://res.cloudinary.com/deb6oiddj/image/upload/v1763372605/uploads/profile-%5Bobject%20Object%5D.jpg" alt="FitStreak App QR Code">
             </div>
           </div>
         </div>
