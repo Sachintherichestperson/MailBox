@@ -14,8 +14,8 @@
     
     body {
       font-family: 'Montserrat', 'Segoe UI', sans-serif;
-      background: #0a0f17;
-      color: white;
+      background: #f8f9fa;
+      color: #333;
       min-height: 100vh;
       display: flex;
       justify-content: center;
@@ -27,20 +27,20 @@
       width: 100%;
       max-width: 1000px;
       background: 
-        radial-gradient(circle at 20% 80%, rgba(46, 125, 50, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 126, 95, 0.1) 0%, transparent 50%),
-        linear-gradient(to bottom, #0d1420, #0a0f17);
-      border: 2px solid rgba(255, 255, 255, 0.1);
+        radial-gradient(circle at 20% 80%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 126, 95, 0.08) 0%, transparent 50%),
+        linear-gradient(to bottom, #ffffff, #f5f7fa);
+      border: 2px solid rgba(0, 0, 0, 0.1);
       border-radius: 5px;
       overflow: hidden;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
       position: relative;
     }
     
     .header {
       background: 
         linear-gradient(135deg, rgba(255, 126, 95, 0.9), rgba(254, 180, 123, 0.9)),
-        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23000" opacity="0.1"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="%23fff" stroke-width="1" opacity="0.05"/></svg>');
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23fff" opacity="0.1"/><path d="M0,0 L100,100 M100,0 L0,100" stroke="%23000" stroke-width="1" opacity="0.05"/></svg>');
       padding: 40px 30px;
       text-align: center;
       position: relative;
@@ -54,7 +54,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="%23fff" stroke-width="1" opacity="0.05"/></svg>');
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><circle cx="100" cy="100" r="80" fill="none" stroke="%23000" stroke-width="1" opacity="0.05"/></svg>');
       background-size: 200px 200px;
     }
     
@@ -106,22 +106,23 @@
     .benefit {
       display: flex;
       align-items: center;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.7);
       border-radius: 12px;
       padding: 20px;
-      border-left: 4px solid #feb47b;
+      border-left: 4px solid #ff7e5f;
       transition: transform 0.3s ease, background 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
     
     .benefit:hover {
       transform: translateX(5px);
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.9);
     }
     
     .benefit-icon {
       font-size: 2.5rem;
       margin-right: 20px;
-      color: #feb47b;
+      color: #ff7e5f;
       min-width: 60px;
       text-align: center;
     }
@@ -129,12 +130,12 @@
     .benefit-text h3 {
       font-size: 1.5rem;
       margin-bottom: 8px;
-      color: #feb47b;
+      color: #ff7e5f;
     }
     
     .benefit-text p {
       font-size: 1.1rem;
-      opacity: 0.9;
+      color: #555;
       line-height: 1.4;
     }
     
@@ -159,7 +160,7 @@
     .qr-section h2 {
       font-size: 2.2rem;
       margin-bottom: 15px;
-      color: #feb47b;
+      color: #ff7e5f;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -167,14 +168,14 @@
     .qr-section p {
       font-size: 1.2rem;
       margin-bottom: 20px;
-      opacity: 0.9;
+      color: #555;
     }
     
     .qr-container {
       background: white;
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
       display: inline-block;
     }
     
@@ -201,18 +202,19 @@
     
     .instructions {
       text-align: center;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.7);
       padding: 20px;
       border-radius: 15px;
       margin-top: 20px;
       width: 100%;
       max-width: 400px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
     
     .instructions h3 {
       font-size: 1.5rem;
       margin-bottom: 15px;
-      color: #feb47b;
+      color: #ff7e5f;
     }
     
     .steps {
@@ -224,10 +226,11 @@
     .step {
       display: flex;
       align-items: center;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.9);
       padding: 12px 20px;
       border-radius: 50px;
       font-size: 1.1rem;
+      color: #555;
     }
     
     .step-number {
@@ -241,6 +244,7 @@
       margin-right: 15px;
       font-weight: bold;
       font-size: 1rem;
+      color: white;
     }
     
     .app-badges {
@@ -259,8 +263,9 @@
       justify-content: center;
       font-weight: bold;
       font-size: 1.1rem;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease;
+      color: white;
     }
     
     .badge:hover {
@@ -276,11 +281,12 @@
     }
     
     .footer {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(255, 255, 255, 0.7);
       padding: 25px;
       text-align: center;
       font-size: 1.1rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      color: #555;
     }
     
     .footer p {
@@ -288,7 +294,7 @@
     }
     
     .footer .highlight {
-      color: #feb47b;
+      color: #ff7e5f;
       font-weight: 700;
     }
     
