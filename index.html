@@ -306,7 +306,7 @@
           <i class="fab fa-apple platform-icon"></i>
           <h2>iOS Web App</h2>
           <p class="platform-description">Access FitStreak directly from your browser on any iOS device.</p>
-          <a href="https://web-fitstreak.onrender.com/" class="download-btn ios-btn">
+          <a href="#" onclick="openIOSApp()" class="download-btn ios-btn">
             Open iOS Web App
           </a>
         </div>
@@ -341,20 +341,22 @@
         </div>
       </div>
     </section>
-    
-    <!-- <section class="qr-section">
-      <h2>Scan to Download</h2>
-      <p>Point your camera at the QR code to quickly download FitStreak</p>
-      
-      <div class="qr-container">
-        <div class="qr-code">
-          <span>[QR Code]</span>
-        </div>
-      </div>
-      
-      <p class="qr-instructions">Scan this code with your phone's camera to get FitStreak</p>
-    </section> -->
   </div>
-  
+  <script>
+  function openIOSApp() {
+    const targetURL = "https://web-fitstreak.onrender.com/";
+    const chromeURL = "googlechrome://" + targetURL.replace("https://", "");
+
+    // Try Chrome first
+    window.location.href = chromeURL;
+
+    // Fallback to Safari
+    setTimeout(() => {
+      window.location.href = targetURL;
+    }, 1500);
+  }
+</script>
+
+
 </body>
 </html>
