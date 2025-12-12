@@ -1,0 +1,37 @@
+{
+  "name": "-y",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sachintherichestperson/App-Links.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sachintherichestperson/App-Links/issues"
+  },
+  "homepage": "https://github.com/Sachintherichestperson/App-Links#readme",
+  "description": "",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.13.2",
+    "body-parser": "^2.2.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "googleapis": "^168.0.0",
+    "imap-simple": "^5.1.0",
+    "mailparser": "^3.9.0",
+    "mongodb": "^7.0.0",
+    "mongoose": "^9.0.1",
+    "openai": "^6.10.0",
+    "path": "^0.12.7"
+  }
+}

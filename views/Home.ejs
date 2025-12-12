@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InboxAI - Smart Email Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .logo-icon {
+            color: #6366f1;
+            font-size: 1.75rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .nav-link:hover {
+            color: #6366f1;
+        }
+        
+        .active {
+            color: #6366f1;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #3b82f6);
+            border-radius: 1rem;
+            margin: 2rem;
+            padding: 3rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+        }
+        
+        .hero-content {
+            max-width: 800px;
+        }
+        
+        .hero-title {
+            font-size: 2.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+        
+        .inbox-stats {
+            display: flex;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+        
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            background: white;
+            margin: 0 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 0.5rem;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            white-space: nowrap;
+        }
+        
+        .tab i {
+            font-size: 1.25rem;
+        }
+        
+        .tab:hover {
+            background-color: #f8fafc;
+        }
+        
+        .tab.active {
+            background-color: #f1f5f9;
+            color: #334155;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 2rem;
+        }
+        
+        .category-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .category-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+        
+        /* Email Grid */
+        .email-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        /* Cards */
+        .email-card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .email-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-color: #e0e7ff;
+        }
+        
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .email-sender {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sender-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .sender-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .sender-info p {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        
+        .email-time {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        
+        .email-subject {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1.05rem;
+            flex-grow: 1;
+        }
+        
+        .email-preview {
+            color: #64748b;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 2;
+        }
+        
+        .email-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+        
+        .email-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Category-specific colors */
+        <%
+        // Define category colors and icons
+        const categoryConfig = {
+            "urgent": { color: "#dc2626", bg: "#fef2f2", icon: "fa-fire", avatar: "linear-gradient(135deg, #f87171, #dc2626)" },
+            "meeting": { color: "#0284c7", bg: "#f0f9ff", icon: "fa-calendar", avatar: "linear-gradient(135deg, #38bdf8, #0284c7)" },
+            "important": { color: "#16a34a", bg: "#f0fdf4", icon: "fa-star", avatar: "linear-gradient(135deg, #4ade80, #16a34a)" },
+            "job_related": { color: "#7c3aed", bg: "#f5f3ff", icon: "fa-briefcase", avatar: "linear-gradient(135deg, #a78bfa, #7c3aed)" },
+            "follow_up": { color: "#ea580c", bg: "#fff7ed", icon: "fa-reply", avatar: "linear-gradient(135deg, #fdba74, #ea580c)" },
+            "promotion": { color: "#db2777", bg: "#fdf2f8", icon: "fa-tag", avatar: "linear-gradient(135deg, #f472b6, #db2777)" },
+            "useless": { color: "#6b7280", bg: "#f9fafb", icon: "fa-trash", avatar: "linear-gradient(135deg, #9ca3af, #6b7280)" },
+            "unknown": { color: "#475569", bg: "#f1f5f9", icon: "fa-question", avatar: "linear-gradient(135deg, #94a3b8, #475569)" }
+        };
+        %>
+        
+        /* Generate category color classes */
+        <% for (const [category, config] of Object.entries(categoryConfig)) { %>
+        .<%= category %>-color {
+            color: <%= config.color %>;
+        }
+        
+        .<%= category %>-bg {
+            background-color: <%= config.bg %>;
+            color: <%= config.color %>;
+        }
+        
+        .<%= category %>-avatar {
+            background: <%= config.avatar %>;
+        }
+        <% } %>
+        
+        /* AI Insights Panel */
+        .ai-insights {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ai-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .ai-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .ai-content {
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: white;
+            border-radius: 1rem;
+            border: 2px dashed #e2e8f0;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-description {
+            color: #64748b;
+            max-width: 400px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-banner {
+                margin: 1rem;
+                padding: 2rem;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .inbox-stats {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+            
+            .category-tabs {
+                margin: 1rem;
+                overflow-x: auto;
+                width: calc(100% - 2rem);
+            }
+            
+            .tab {
+                padding: 0.75rem 1.25rem;
+                white-space: nowrap;
+            }
+            
+            .email-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .section-actions {
+                width: 100%;
+            }
+            
+            .btn {
+                flex-grow: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-brain logo-icon"></i>
+            <span>InboxAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link">Inbox</a>
+            <a href="#" class="nav-link">Analytics</a>
+            <a href="#" class="nav-link">Settings</a>
+            <div class="user-profile">
+                <div class="user-avatar">AS</div>
+                <span>Alex Smith</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1 class="hero-title">AI-Powered Email Intelligence</h1>
+            <p class="hero-subtitle">Your inbox is automatically organized into categories. Switch between tabs to focus on what matters most right now.</p>
+            
+            <div class="inbox-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-emails"><%= count %></div>
+                    <div class="stat-label">Total Emails</div>
+                </div>
+                <% 
+                // Calculate email counts per category
+                const categoryCounts = {};
+                const categories = ["urgent", "meeting", "important", "job_related", "follow_up", "promotion", "useless", "unknown"];
+                
+                categories.forEach(cat => {
+                    categoryCounts[cat] = mails ? mails.filter(email => email.category === cat).length : 0;
+                });
+                
+                // Display top 3 categories with highest counts
+                const topCategories = Object.entries(categoryCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3);
+                
+                topCategories.forEach(([category, count]) => {
+                    const config = categoryConfig[category];
+                %>
+                <div class="stat-item">
+                    <div class="stat-number" id="<%= category %>-count"><%= count %></div>
+                    <div class="stat-label"><%= category.replace('_', ' ').charAt(0).toUpperCase() + category.replace('_', ' ').slice(1) %></div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+        <% categories.forEach((category, index) => { 
+            const config = categoryConfig[category];
+        %>
+        <button class="tab <%= category %>-color <%= index === 0 ? 'active' : '' %>" data-category="<%= category %>">
+            <i class="fas <%= config.icon %>"></i>
+            <%= category.replace('_', ' ').charAt(0).toUpperCase() + category.replace('_', ' ').slice(1) %>
+            <span class="email-count-badge">(<%= categoryCounts[category] %>)</span>
+        </button>
+        <% }); %>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+        <% categories.forEach((category, index) => { 
+            const config = categoryConfig[category];
+            const categoryEmails = mails ? mails.filter(email => email.category === category) : [];
+        %>
+        <!-- <%= category %> Section -->
+        <section class="category-section <%= index === 0 ? 'active' : '' %>" id="<%= category %>-section">
+            <div class="section-header">
+                <h2 class="section-title <%= category %>-color">
+                    <i class="fas <%= config.icon %>"></i>
+                    <%= category.replace('_', ' ').charAt(0).toUpperCase() + category.replace('_', ' ').slice(1) %> Emails
+                    <span class="email-count">(<%= categoryEmails.length %>)</span>
+                </h2>
+                <div class="section-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <% if (category === 'useless') { %>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-trash"></i> Delete All
+                    </button>
+                    <% } else if (category === 'urgent' || category === 'important') { %>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-check-double"></i> Mark All as Read
+                    </button>
+                    <% } else if (category === 'follow_up') { %>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i> Schedule All
+                    </button>
+                    <% } else { %>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-archive"></i> Archive All
+                    </button>
+                    <% } %>
+                </div>
+            </div>
+            
+            <% if (categoryEmails.length > 0) { %>
+            <div class="email-grid">
+                <% categoryEmails.forEach((email, emailIndex) => { 
+                    // Extract sender initials for avatar
+                    const senderName = email.from.split('<')[0].trim();
+                    const initials = senderName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    
+                    // Format date
+                    const date = new Date(email.date);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - date);
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    let timeDisplay;
+                    if (diffDays === 0) {
+                        timeDisplay = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    } else if (diffDays === 1) {
+                        timeDisplay = 'Yesterday';
+                    } else if (diffDays < 7) {
+                        timeDisplay = `${diffDays} days ago`;
+                    } else {
+                        timeDisplay = date.toLocaleDateString();
+                    }
+                %>
+                <div class="email-card" data-email-id="<%= email.id %>">
+                    <div class="email-header">
+                        <div class="email-sender">
+                            <div class="sender-avatar <%= category %>-avatar"><%= initials %></div>
+                            <div class="sender-info">
+                                <h4><%= senderName %></h4>
+                                <p><%= email.from.includes('<') ? email.from.match(/<([^>]+)>/)?.[1] || email.from : email.from %></p>
+                            </div>
+                        </div>
+                        <span class="email-time"><%= timeDisplay %></span>
+                    </div>
+                    <h3 class="email-subject"><%= email.subject || '(No Subject)' %></h3>
+                    <p class="email-preview"><%= email.snippet || 'No preview available' %></p>
+                    <div class="email-tags">
+                        <span class="email-tag <%= category %>-bg"><%= category.replace('_', ' ') %></span>
+                        <% if (email.reason) { %>
+                        <span class="email-tag" style="background-color: #e2e8f0; color: #475569;">
+                            <%= email.reason %>
+                        </span>
+                        <% } %>
+                        <% if (email.priority) { %>
+                        <span class="email-tag" style="background-color: #fef2f2; color: #dc2626;">
+                            Priority: <%= email.priority %>
+                        </span>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+            <% } else { %>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas <%= config.icon %>"></i>
+                </div>
+                <h3 class="empty-title">No <%= category.replace('_', ' ') %> emails</h3>
+                <p class="empty-description">
+                    <% if (category === 'urgent') { %>
+                    Great! You have no urgent emails requiring immediate attention.
+                    <% } else if (category === 'useless') { %>
+                    Excellent! Your inbox is clean with no useless emails.
+                    <% } else { %>
+                    No emails categorized as <%= category.replace('_', ' ') %> at the moment.
+                    <% } %>
+                </p>
+            </div>
+            <% } %>
+            
+            <!-- AI Insights -->
+            <div class="ai-insights">
+                <div class="ai-header">
+                    <div class="ai-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-title">AI Insight: <%= category.replace('_', ' ').charAt(0).toUpperCase() + category.replace('_', ' ').slice(1) %> Emails</div>
+                </div>
+                <div class="ai-content">
+                    <% 
+                    let insightText = '';
+                    switch(category) {
+                        case 'urgent':
+                            insightText = `You have ${categoryEmails.length} urgent emails. These require immediate attention. Consider addressing these first before moving to other categories.`;
+                            break;
+                        case 'meeting':
+                            insightText = `You have ${categoryEmails.length} emails related to meetings. Check your calendar integration to ensure all meetings are properly scheduled.`;
+                            break;
+                        case 'important':
+                            insightText = `These ${categoryEmails.length} important emails should be reviewed today. They contain critical information but don't require immediate action.`;
+                            break;
+                        case 'job_related':
+                            insightText = `You have ${categoryEmails.length} job-related emails. These are directly related to your work responsibilities and projects.`;
+                            break;
+                        case 'follow_up':
+                            insightText = `You have ${categoryEmails.length} emails that need follow-up. Set reminders or schedule time to address these items.`;
+                            break;
+                        case 'promotion':
+                            insightText = `These ${categoryEmails.length} promotional emails can be reviewed at your convenience. Consider creating rules to automatically categorize similar emails.`;
+                            break;
+                        case 'useless':
+                            insightText = `You have ${categoryEmails.length} emails classified as useless. These can typically be deleted or archived without review.`;
+                            break;
+                        case 'unknown':
+                            insightText = `There are ${categoryEmails.length} emails that couldn't be categorized. Review these to improve the AI's classification accuracy.`;
+                            break;
+                    }
+                    %>
+                    <p><%= insightText %></p>
+                    <% if (categoryEmails.length > 0) { %>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        <em>Last analyzed: <%= new Date().toLocaleDateString() %></em>
+                    </p>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+        <% }); %>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>InboxAI Dashboard v2.1 • AI-powered email organization • © 2023 All rights reserved</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            <strong>Categories:</strong> 
+            <% categories.forEach((category, index) => { %>
+            <span class="category-indicator" style="display: inline-block; width: 10px; height: 10px; background-color: <%= categoryConfig[category].color %>; border-radius: 50%; margin: 0 5px; vertical-align: middle;"></span>
+            <%= category.replace('_', ' ') %><%= index < categories.length - 1 ? ' • ' : '' %>
+            <% }); %>
+        </p>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.category-section');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding section
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === `${category}-section`) {
+                        section.classList.add('active');
+                    }
+                });
+                
+                // Update stats animation
+                updateStatsAnimation(category);
+            });
+        });
+        
+        // Update stats animation based on active category
+        function updateStatsAnimation(category) {
+            const statElement = document.querySelector(`#${category}-section .email-count`);
+            if (statElement) {
+                const count = parseInt(statElement.textContent.match(/\d+/)[0]);
+                animateValue(statElement, 0, count, 800);
+            }
+        }
+        
+        // Animate number counting
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const originalText = element.textContent;
+            const match = originalText.match(/\((\d+)\)/);
+            if (!match) return;
+            
+            const prefix = originalText.substring(0, match.index + 1);
+            const suffix = originalText.substring(match.index + match[0].length);
+            
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentValue = Math.floor(progress * (end - start) + start);
+                element.textContent = `${prefix}${currentValue}${suffix}`;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Initialize stats animation on page load
+        window.addEventListener('load', () => {
+            // Animate total emails count
+            const totalEmailsElement = document.getElementById('total-emails');
+            if (totalEmailsElement) {
+                const totalEmails = parseInt(totalEmailsElement.textContent) || 0;
+                animateValue(totalEmailsElement, 0, totalEmails, 1500);
+            }
+            
+            // Animate category counts in stats section
+            const categoryCountElements = document.querySelectorAll('.stat-item .stat-number[id$="-count"]');
+            categoryCountElements.forEach(element => {
+                const count = parseInt(element.textContent) || 0;
+                animateValue(element, 0, count, 1200);
+            });
+            
+            // Add click effects to email cards
+            document.querySelectorAll('.email-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const emailId = this.getAttribute('data-email-id');
+                    // In a real app, this would open the email
+                    console.log('Opening email:', emailId);
+                    
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.1)';
+                    
+                    // Reset after a moment
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-4px)';
+                        this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+                    }, 150);
+                    
+                    // You could make an API call here to fetch full email content
+                    // fetch(`/api/email/${emailId}`).then(...)
+                });
+            });
+            
+            // Auto-refresh data every 60 seconds
+            setInterval(() => {
+                console.log('Auto-refreshing email data...');
+                // You could implement auto-refresh here
+                // window.location.reload(); 
+                // or fetch('/fetch-mails').then(...)
+            }, 60000);
+        });
+    </script>
+</body>
+</html>
