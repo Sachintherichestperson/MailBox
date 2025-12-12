@@ -199,7 +199,6 @@ app.get("/fetch-mails", async (req, res) => {
 
     const messages = result.data.messages || [];
 
-    // Fetch email data incl snippet
     const fastEmails = await Promise.all(
       messages.map(async (msg) => {
         const data = await gmail.users.messages.get({
