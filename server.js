@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import fs from "fs";
 
 import { connectDB } from "./db/connect.js";
-import File from "./mongoose/fileModel.js";
+import File from "./mongoose/FileModel.js";
 import { upload } from "./config/uploadConfig.js";
 import { ensureUploadsDir } from "./utils/fileUtils.js";
 
