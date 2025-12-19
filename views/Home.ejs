@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InboxAI - Smart Email Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            white-space: nowrap;
+        }
+        
+        .logo-icon {
+            color: #6366f1;
+            font-size: 1.75rem;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6366f1;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .nav-link:hover {
+            color: #6366f1;
+        }
+        
+        .active {
+            color: #6366f1;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            margin-left: auto;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        
+        .user-name {
+            display: inline;
+        }
+        
+        /* Hero Banner */
+        .hero-banner {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #3b82f6);
+            border-radius: 1rem;
+            margin: 1.5rem;
+            padding: 2rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.2);
+        }
+        
+        .hero-content {
+            max-width: 100%;
+        }
+        
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+            max-width: 100%;
+        }
+        
+        .inbox-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            min-width: 100px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        /* Category Tabs */
+        .category-tabs {
+            display: flex;
+            background: white;
+            margin: 0 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            padding: 0.5rem;
+            overflow-x: auto;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .category-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .tab i {
+            font-size: 1.1rem;
+        }
+        
+        .tab:hover {
+            background-color: #f8fafc;
+        }
+        
+        .tab.active {
+            background-color: #f1f5f9;
+            color: #334155;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .email-count-badge {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 1.5rem;
+        }
+        
+        .category-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .category-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .email-count {
+            font-size: 1rem;
+            opacity: 0.7;
+            font-weight: normal;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+        
+        /* Email Grid */
+        .email-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+        
+        /* Cards */
+        .email-card {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #f1f5f9;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .email-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border-color: #e0e7ff;
+        }
+        
+        .email-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .email-sender {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .sender-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        
+        .sender-info {
+            min-width: 0;
+            overflow: hidden;
+        }
+        
+        .sender-info h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .sender-info p {
+            font-size: 0.8rem;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .email-time {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            flex-shrink: 0;
+        }
+        
+        .email-subject {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+        
+        .email-preview {
+            color: #64748b;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 2;
+        }
+        
+        .email-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+        
+        .email-tag {
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        /* Category-specific colors */
+        .urgent-color { color: #dc2626; }
+        .urgent-bg { background-color: #fef2f2; color: #dc2626; }
+        .urgent-avatar { background: linear-gradient(135deg, #f87171, #dc2626); }
+        
+        .meeting-color { color: #0284c7; }
+        .meeting-bg { background-color: #f0f9ff; color: #0284c7; }
+        .meeting-avatar { background: linear-gradient(135deg, #38bdf8, #0284c7); }
+        
+        .important-color { color: #16a34a; }
+        .important-bg { background-color: #f0fdf4; color: #16a34a; }
+        .important-avatar { background: linear-gradient(135deg, #4ade80, #16a34a); }
+        
+        .job_related-color { color: #7c3aed; }
+        .job_related-bg { background-color: #f5f3ff; color: #7c3aed; }
+        .job_related-avatar { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+        
+        .follow_up-color { color: #ea580c; }
+        .follow_up-bg { background-color: #fff7ed; color: #ea580c; }
+        .follow_up-avatar { background: linear-gradient(135deg, #fdba74, #ea580c); }
+        
+        .promotion-color { color: #db2777; }
+        .promotion-bg { background-color: #fdf2f8; color: #db2777; }
+        .promotion-avatar { background: linear-gradient(135deg, #f472b6, #db2777); }
+        
+        .useless-color { color: #6b7280; }
+        .useless-bg { background-color: #f9fafb; color: #6b7280; }
+        .useless-avatar { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+        
+        .unknown-color { color: #475569; }
+        .unknown-bg { background-color: #f1f5f9; color: #475569; }
+        .unknown-avatar { background: linear-gradient(135deg, #94a3b8, #475569); }
+        
+        /* AI Insights Panel */
+        .ai-insights {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ai-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .ai-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .ai-content {
+            color: #64748b;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 1.5rem;
+        }
+        
+        .footer p {
+            margin-bottom: 0.5rem;
+        }
+        
+        .category-indicators {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .category-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+        }
+        
+        .color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            background: white;
+            border-radius: 1rem;
+            border: 2px dashed #e2e8f0;
+        }
+        
+        .empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-description {
+            color: #64748b;
+            max-width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+        
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            padding: 1.5rem;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .mobile-nav.active {
+            right: 0;
+        }
+        
+        .mobile-nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .mobile-nav-link {
+            text-decoration: none;
+            color: #334155;
+            font-weight: 500;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+        
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            background-color: #f1f5f9;
+            color: #6366f1;
+        }
+        
+        .close-menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .email-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                order: 2;
+                margin-left: auto;
+            }
+            
+            .logo-container {
+                order: 1;
+            }
+            
+            .user-profile {
+                order: 3;
+                margin-left: 0;
+                margin-right: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .user-name {
+                display: none;
+            }
+            
+            .hero-banner {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .hero-title {
+                font-size: 1.75rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .inbox-stats {
+                gap: 1rem;
+            }
+            
+            .stat-item {
+                min-width: 80px;
+            }
+            
+            .stat-number {
+                font-size: 1.75rem;
+            }
+            
+            .category-tabs {
+                margin: 1rem;
+            }
+            
+            .dashboard-content {
+                padding: 1rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+            
+            .section-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .btn {
+                flex-grow: 1;
+                justify-content: center;
+                padding: 0.65rem 1rem;
+            }
+            
+            .email-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .email-card {
+                padding: 1rem;
+            }
+            
+            .email-sender {
+                gap: 0.5rem;
+            }
+            
+            .sender-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+            
+            .sender-info h4 {
+                font-size: 0.9rem;
+            }
+            
+            .email-time {
+                font-size: 0.75rem;
+            }
+            
+            .ai-insights {
+                padding: 1rem;
+            }
+            
+            .footer {
+                padding: 1rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            
+            .inbox-stats {
+                justify-content: space-between;
+            }
+            
+            .stat-item {
+                min-width: calc(50% - 0.5rem);
+                margin-bottom: 0.5rem;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .category-tabs {
+                padding: 0.25rem;
+            }
+            
+            .tab {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .tab i {
+                font-size: 1rem;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+            
+            .section-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .email-header {
+                flex-wrap: wrap;
+            }
+            
+            .email-time {
+                width: 100;
+                text-align: right;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .hero-banner {
+                padding: 1rem;
+            }
+            
+            .hero-title {
+                font-size: 1.3rem;
+            }
+            
+            .logo {
+                font-size: 1.25rem;
+            }
+            
+            .logo-icon {
+                font-size: 1.5rem;
+            }
+            
+            .tab {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.75rem;
+            }
+        }
+        
+        /* Print Styles */
+        @media print {
+            .navbar, .category-tabs, .section-actions, .ai-insights, .footer {
+                display: none;
+            }
+            
+            .email-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+            
+            body {
+                background-color: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo-container">
+            <i class="fas fa-brain logo-icon"></i>
+            <span class="logo">InboxAI</span>
+        </div>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-links">
+            <a href="#" class="nav-link active">Dashboard</a>
+            <a href="#" class="nav-link">Inbox</a>
+            <a href="#" class="nav-link">Analytics</a>
+            <a href="#" class="nav-link">Settings</a>
+        </div>
+        
+        <div class="user-profile">
+            <div class="user-avatar">AS</div>
+            <span class="user-name">Alex Smith</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Menu -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <h3>Menu</h3>
+            <button class="close-menu-btn" id="closeMenuBtn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="mobile-nav-links">
+            <a href="#" class="mobile-nav-link active">Dashboard</a>
+            <a href="#" class="mobile-nav-link">Inbox</a>
+            <a href="#" class="mobile-nav-link">Analytics</a>
+            <a href="#" class="mobile-nav-link">Settings</a>
+            <a href="#" class="mobile-nav-link">Profile</a>
+            <a href="#" class="mobile-nav-link">Help</a>
+            <a href="#" class="mobile-nav-link">Logout</a>
+        </div>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <div class="hero-content">
+            <h1 class="hero-title">AI-Powered Email Intelligence</h1>
+            <p class="hero-subtitle">Your inbox is automatically organized into categories. Switch between tabs to focus on what matters most right now.</p>
+            
+            <div class="inbox-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-emails">127</div>
+                    <div class="stat-label">Total Emails</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="urgent-count">12</div>
+                    <div class="stat-label">Urgent</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="important-count">24</div>
+                    <div class="stat-label">Important</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="meeting-count">8</div>
+                    <div class="stat-label">Meetings</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="category-tabs">
+        <button class="tab urgent-color active" data-category="urgent">
+            <i class="fas fa-fire"></i>
+            Urgent
+            <span class="email-count-badge">(12)</span>
+        </button>
+        <button class="tab meeting-color" data-category="meeting">
+            <i class="fas fa-calendar"></i>
+            Meeting
+            <span class="email-count-badge">(8)</span>
+        </button>
+        <button class="tab important-color" data-category="important">
+            <i class="fas fa-star"></i>
+            Important
+            <span class="email-count-badge">(24)</span>
+        </button>
+        <button class="tab job_related-color" data-category="job_related">
+            <i class="fas fa-briefcase"></i>
+            Job Related
+            <span class="email-count-badge">(42)</span>
+        </button>
+        <button class="tab follow_up-color" data-category="follow_up">
+            <i class="fas fa-reply"></i>
+            Follow Up
+            <span class="email-count-badge">(16)</span>
+        </button>
+        <button class="tab promotion-color" data-category="promotion">
+            <i class="fas fa-tag"></i>
+            Promotion
+            <span class="email-count-badge">(18)</span>
+        </button>
+        <button class="tab useless-color" data-category="useless">
+            <i class="fas fa-trash"></i>
+            Useless
+            <span class="email-count-badge">(5)</span>
+        </button>
+        <button class="tab unknown-color" data-category="unknown">
+            <i class="fas fa-question"></i>
+            Unknown
+            <span class="email-count-badge">(2)</span>
+        </button>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+        <!-- Urgent Section -->
+        <section class="category-section active" id="urgent-section">
+            <div class="section-header">
+                <h2 class="section-title urgent-color">
+                    <i class="fas fa-fire"></i>
+                    Urgent Emails
+                    <span class="email-count">(12)</span>
+                </h2>
+                <div class="section-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-check-double"></i> Mark All as Read
+                    </button>
+                </div>
+            </div>
+            
+            <div class="email-grid">
+                <!-- Email Card 1 -->
+                <div class="email-card" data-email-id="1">
+                    <div class="email-header">
+                        <div class="email-sender">
+                            <div class="sender-avatar urgent-avatar">JD</div>
+                            <div class="sender-info">
+                                <h4>John Doe</h4>
+                                <p>john.doe@company.com</p>
+                            </div>
+                        </div>
+                        <span class="email-time">10:30 AM</span>
+                    </div>
+                    <h3 class="email-subject">URGENT: Server Downtime in Progress</h3>
+                    <p class="email-preview">Our main production server is experiencing critical issues. Immediate action required to prevent data loss. Please join the emergency call...</p>
+                    <div class="email-tags">
+                        <span class="email-tag urgent-bg">urgent</span>
+                        <span class="email-tag" style="background-color: #fef2f2; color: #dc2626;">
+                            Priority: Critical
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Email Card 2 -->
+                <div class="email-card" data-email-id="2">
+                    <div class="email-header">
+                        <div class="email-sender">
+                            <div class="sender-avatar urgent-avatar">HR</div>
+                            <div class="sender-info">
+                                <h4>HR Department</h4>
+                                <p>hr@company.com</p>
+                            </div>
+                        </div>
+                        <span class="email-time">Yesterday</span>
+                    </div>
+                    <h3 class="email-subject">Action Required: Benefits Enrollment Deadline</h3>
+                    <p class="email-preview">Your benefits enrollment period ends today at 5 PM EST. Failure to enroll will result in loss of coverage for the next quarter...</p>
+                    <div class="email-tags">
+                        <span class="email-tag urgent-bg">urgent</span>
+                        <span class="email-tag" style="background-color: #fef2f2; color: #dc2626;">
+                            Deadline: Today
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Insights -->
+            <div class="ai-insights">
+                <div class="ai-header">
+                    <div class="ai-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-title">AI Insight: Urgent Emails</div>
+                </div>
+                <div class="ai-content">
+                    <p>You have 12 urgent emails. These require immediate attention. Consider addressing these first before moving to other categories. The server downtime issue should be prioritized as it impacts multiple teams.</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        <em>Last analyzed: Today at 11:42 AM</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Important Section -->
+        <section class="category-section" id="important-section">
+            <div class="section-header">
+                <h2 class="section-title important-color">
+                    <i class="fas fa-star"></i>
+                    Important Emails
+                    <span class="email-count">(24)</span>
+                </h2>
+                <div class="section-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-check-double"></i> Mark All as Read
+                    </button>
+                </div>
+            </div>
+            
+            <div class="email-grid">
+                <!-- Email Card -->
+                <div class="email-card" data-email-id="3">
+                    <div class="email-header">
+                        <div class="email-sender">
+                            <div class="sender-avatar important-avatar">MT</div>
+                            <div class="sender-info">
+                                <h4>Marketing Team</h4>
+                                <p>marketing@company.com</p>
+                            </div>
+                        </div>
+                        <span class="email-time">2 days ago</span>
+                    </div>
+                    <h3 class="email-subject">Q4 Campaign Strategy Review</h3>
+                    <p class="email-preview">Please review the attached Q4 marketing campaign strategy document and provide feedback by Friday. Your input is critical for the final planning...</p>
+                    <div class="email-tags">
+                        <span class="email-tag important-bg">important</span>
+                        <span class="email-tag" style="background-color: #f0fdf4; color: #16a34a;">
+                            Review Required
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Insights -->
+            <div class="ai-insights">
+                <div class="ai-header">
+                    <div class="ai-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-title">AI Insight: Important Emails</div>
+                </div>
+                <div class="ai-content">
+                    <p>These 24 important emails should be reviewed today. They contain critical information but don't require immediate action. The Q4 campaign review should be prioritized for this week.</p>
+                    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                        <em>Last analyzed: Today at 11:42 AM</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Other sections would follow the same pattern -->
+        <!-- For brevity, I've only included 2 sections in this example -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>InboxAI Dashboard v2.1 • AI-powered email organization • © 2023 All rights reserved</p>
+        <div class="category-indicators">
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #dc2626;"></span>
+                Urgent
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #0284c7;"></span>
+                Meeting
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #16a34a;"></span>
+                Important
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #7c3aed;"></span>
+                Job Related
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #ea580c;"></span>
+                Follow Up
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #db2777;"></span>
+                Promotion
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #6b7280;"></span>
+                Useless
+            </span>
+            <span class="category-indicator">
+                <span class="color-dot" style="background-color: #475569;"></span>
+                Unknown
+            </span>
+        </div>
+    </footer>
+
+    <script>
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.category-section');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding section
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === `${category}-section`) {
+                        section.classList.add('active');
+                    }
+                });
+                
+                // Update stats animation
+                updateStatsAnimation(category);
+            });
+        });
+        
+        // Update stats animation based on active category
+        function updateStatsAnimation(category) {
+            const statElement = document.querySelector(`#${category}-section .email-count`);
+            if (statElement) {
+                const count = parseInt(statElement.textContent.match(/\d+/)[0]);
+                animateValue(statElement, 0, count, 800);
+            }
+        }
+        
+        // Animate number counting
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const originalText = element.textContent;
+            const match = originalText.match(/\((\d+)\)/);
+            if (!match) return;
+            
+            const prefix = originalText.substring(0, match.index + 1);
+            const suffix = originalText.substring(match.index + match[0].length);
+            
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentValue = Math.floor(progress * (end - start) + start);
+                element.textContent = `${prefix}${currentValue}${suffix}`;
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+        const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+        
+        function openMobileMenu() {
+            mobileNav.classList.add('active');
+            mobileNavOverlay.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileMenu() {
+            mobileNav.classList.remove('active');
+            mobileNavOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+        closeMenuBtn.addEventListener('click', closeMobileMenu);
+        mobileNavOverlay.addEventListener('click', closeMobileMenu);
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.mobile-nav-link').forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+        
+        // Initialize stats animation on page load
+        window.addEventListener('load', () => {
+            // Animate total emails count
+            const totalEmailsElement = document.getElementById('total-emails');
+            if (totalEmailsElement) {
+                const totalEmails = parseInt(totalEmailsElement.textContent) || 0;
+                animateValue(totalEmailsElement, 0, totalEmails, 1500);
+            }
+            
+            // Animate category counts in stats section
+            const categoryCountElements = document.querySelectorAll('.stat-item .stat-number[id$="-count"]');
+            categoryCountElements.forEach(element => {
+                const count = parseInt(element.textContent) || 0;
+                animateValue(element, 0, count, 1200);
+            });
+            
+            // Add click effects to email cards
+            document.querySelectorAll('.email-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const emailId = this.getAttribute('data-email-id');
+                    // In a real app, this would open the email
+                    console.log('Opening email:', emailId);
+                    
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.1)';
+                    
+                    // Reset after a moment
+                    setTimeout(() => {
+                        this.style.transform = 'translateY(-4px)';
+                        this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.08)';
+                    }, 150);
+                });
+            });
+            
+            // Handle window resize
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    // Adjust layout on resize
+                    if (window.innerWidth > 768) {
+                        closeMobileMenu();
+                    }
+                }, 250);
+            });
+            
+            // Auto-refresh data every 60 seconds
+            setInterval(() => {
+                console.log('Auto-refreshing email data...');
+                // You could implement auto-refresh here
+                // window.location.reload(); 
+                // or fetch('/fetch-mails').then(...)
+            }, 60000);
+        });
+    </script>
+</body>
+</html>
