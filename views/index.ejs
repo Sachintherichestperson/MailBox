@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload & Share</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .upload-form { background: #f5f5f5; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        input[type="file"] { padding: 10px; background: white; border: 2px dashed #ccc; width: 100%; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        .file-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .file-card { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+        .file-icon { font-size: 40px; margin-bottom: 10px; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>📁 File Upload & Share</h1>
+    
+    <% if (typeof success !== 'undefined' && success) { %>
+        <div class="success">✅ File uploaded successfully!</div>
+    <% } %>
+    
+    <div class="upload-form">
+        <h2>Upload a File</h2>
+        <form action="/upload" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Your Name:</label>
+                <input type="text" name="uploaderName" placeholder="Enter your name" required>
+            </div>
+            
+            <div class="form-group">
+                <label>File Description:</label>
+                <textarea name="description" placeholder="What is this file about?" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Select File:</label>
+                <input type="file" name="file" required>
+                <small>Supported: Excel, PDF, PowerPoint, Word, Images, Power BI (.pbix), CSV, Text</small>
+            </div>
+            
+            <button type="submit">Upload File</button>
+        </form>
+    </div>
+    
+    <h2>Recently Uploaded Files</h2>
+    
+    <% if (files.length === 0) { %>
+        <p>No files uploaded yet. Be the first!</p>
+    <% } else { %>
+        <div class="file-list">
+            <% files.forEach(file => { %>
+                <div class="file-card">
+                    <div class="file-icon">
+                        <% if (file.fileType.includes('pdf')) { %>📄
+                        <% } else if (file.fileType.includes('excel') || file.originalName.includes('.xlsx') || file.originalName.includes('.xls')) { %>📊
+                        <% } else if (file.fileType.includes('powerpoint')) { %>📽️
+                        <% } else if (file.fileType.includes('word')) { %>📝
+                        <% } else if (file.fileType.includes('image')) { %>🖼️
+                        <% } else if (file.originalName.includes('.pbix')) { %>📈
+                        <% } else { %>📎<% } %>
+                    </div>
+                    
+                    <h3><%= file.originalName %></h3>
+                    <p><strong>By:</strong> <%= file.uploaderName %></p>
+                    <p><strong>Size:</strong> <%= (file.size / 1024 / 1024).toFixed(2) %> MB</p>
+                    <p><strong>Uploaded:</strong> <%= new Date(file.uploadedAt).toLocaleDateString() %></p>
+                    
+                    <% if (file.description) { %>
+                        <p><%= file.description %></p>
+                    <% } %>
+                    
+                    <a href="/file/<%= file._id %>" style="display: inline-block; margin-top: 10px; padding: 8px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">
+                        View & Download
+                    </a>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</body>
+</html>

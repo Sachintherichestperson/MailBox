@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= file.originalName %> - View File</title>
+</head>
+<body>
+    <a href="/">← Back to Uploads</a>
+    
+    <h1><%= file.originalName %></h1>
+    
+    <p><strong>Uploaded by:</strong> <%= file.uploaderName %></p>
+    <p><strong>Uploaded on:</strong> <%= new Date(file.uploadedAt).toLocaleString() %></p>
+    <p><strong>File size:</strong> 
+        <% if (file.size < 1024) { %>
+            <%= file.size %> bytes
+        <% } else if (file.size < 1024 * 1024) { %>
+            <%= (file.size / 1024).toFixed(1) %> KB
+        <% } else { %>
+            <%= (file.size / 1024 / 1024).toFixed(2) %> MB
+        <% } %>
+    </p>
+    <p><strong>File type:</strong> <%= file.fileType %></p>
+    
+    <% if (file.description) { %>
+        <p><strong>Description:</strong> <%= file.description %></p>
+    <% } %>
+    
+    <br>
+    <a href="/download/<%= file._id %>" download>Download File</a>
+    
+    <hr>
+    
+    <h2>File Preview</h2>
+    
+    <% if (isImage) { %>
+        <div>
+            <img src="<%= file.fileUrl %>" alt="<%= file.originalName %>" style="max-width: 100%; max-height: 500px;">
+        </div>
+    <% } else if (isPDF) { %>
+        <div>
+            <iframe src="<%= file.fileUrl %>" width="100%" height="600px"></iframe>
+        </div>
+    <% } else if (isPowerBI) { %>
+        <div>
+            <h3>Power BI File (.pbix)</h3>
+            <p>This file cannot be previewed in browser.</p>
+            <p>Download and open with Power BI Desktop to view.</p>
+            <a href="/download/<%= file._id %>" download>Download .pbix File</a>
+        </div>
+    <% } else if (isExcel) { %>
+        <div>
+            <h3>Excel File</h3>
+            <p>Preview not available. Please download to view.</p>
+            <p>You can also:</p>
+            <ul>
+                <li>Download and open with Microsoft Excel</li>
+                <li>Upload to Google Sheets for online preview</li>
+            </ul>
+            <a href="https://docs.google.com/spreadsheets/create?url=<%= encodeURIComponent(file.fileUrl) %>" target="_blank">Open in Google Sheets</a>
+        </div>
+    <% } else if (isPowerpoint) { %>
+        <div>
+            <h3>PowerPoint File</h3>
+            <p>Preview not available. Please download to view.</p>
+            <p>You can also:</p>
+            <ul>
+                <li>Download and open with Microsoft PowerPoint</li>
+                <li>Upload to Google Slides for online preview</li>
+            </ul>
+            <a href="https://docs.google.com/presentation/create?url=<%= encodeURIComponent(file.fileUrl) %>" target="_blank">Open in Google Slides</a>
+        </div>
+    <% } else if (isWord) { %>
+        <div>
+            <h3>Word Document</h3>
+            <p>Preview not available. Please download to view.</p>
+            <p>You can also:</p>
+            <ul>
+                <li>Download and open with Microsoft Word</li>
+                <li>Upload to Google Docs for online preview</li>
+            </ul>
+            <a href="https://docs.google.com/document/create?url=<%= encodeURIComponent(file.fileUrl) %>" target="_blank">Open in Google Docs</a>
+        </div>
+    <% } else { %>
+        <div>
+            <h3>File Type Not Previewable</h3>
+            <p>This file type cannot be previewed in browser.</p>
+            <a href="/download/<%= file._id %>" download>Download File</a>
+        </div>
+    <% } %>
+    
+    <hr>
+    
+    <h3>Share this file:</h3>
+    <input type="text" value="http://localhost:3000/file/<%= file._id %>" readonly style="width: 100%; padding: 10px; margin: 10px 0;">
+    
+    <script>
+        // Simple script to select URL when clicked
+        document.querySelector('input[type="text"]').addEventListener('click', function() {
+            this.select();
+            navigator.clipboard.writeText(this.value).then(function() {
+                alert('Link copied to clipboard!');
+            });
+        });
+    </script>
+</body>
+</html>

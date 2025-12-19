@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InboxAI - Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            min-height: 100vh;
+        }
+        
+        /* Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 2rem;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .logo-icon {
+            color: #6366f1;
+            font-size: 1.75rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #64748b;
+            font-weight: 500;
+            transition: color 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .nav-link:hover {
+            color: #6366f1;
+        }
+        
+        .active {
+            color: #6366f1;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        /* Analytics Header */
+        .analytics-header {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .analytics-title {
+            font-size: 2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .analytics-subtitle {
+            color: #64748b;
+            max-width: 700px;
+        }
+        
+        /* Time Filters */
+        .time-filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+        
+        .time-filter-btn {
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+        }
+        
+        .time-filter-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+        
+        .time-filter-btn.active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border-color: transparent;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .stat-icon.inbox {
+            background: linear-gradient(135deg, #93c5fd, #3b82f6);
+            color: white;
+        }
+        
+        .stat-icon.time {
+            background: linear-gradient(135deg, #a5b4fc, #6366f1);
+            color: white;
+        }
+        
+        .stat-icon.category {
+            background: linear-gradient(135deg, #c4b5fd, #8b5cf6);
+            color: white;
+        }
+        
+        .stat-icon.sentiment {
+            background: linear-gradient(135deg, #86efac, #16a34a);
+            color: white;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 50px;
+        }
+        
+        .trend-up {
+            background-color: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .trend-down {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .trend-neutral {
+            background-color: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        
+        /* Charts Section */
+        .charts-section {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chart-btn {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        
+        .chart-btn:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+        
+        .chart-canvas-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        /* Category Distribution */
+        .category-distribution {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .category-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .category-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+        
+        .category-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .category-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .category-info {
+            flex-grow: 1;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .category-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .category-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e2e8f0;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .category-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        /* Sender Analytics */
+        .sender-analytics {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .sender-table {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-row:hover {
+            background-color: #f8fafc;
+        }
+        
+        .sender-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .sender-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        
+        /* AI Recommendations */
+        .ai-recommendations {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .recommendation-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .recommendation-icon.efficiency {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        
+        .recommendation-icon.organization {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .recommendation-icon.productivity {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+        }
+        
+        .recommendation-content {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .recommendation-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 0.85rem;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .action-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.2);
+        }
+        
+        .action-btn.secondary {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: #e2e8f0;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .analytics-header {
+                padding: 1.5rem;
+            }
+            
+            .stats-grid {
+                padding: 0 1.5rem;
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .charts-section, .category-distribution, .sender-analytics, .ai-recommendations {
+                padding: 0 1.5rem;
+            }
+            
+            .chart-canvas-container {
+                height: 250px;
+            }
+            
+            .table-header, .table-row {
+                grid-template-columns: 1fr 1fr;
+                padding: 0.75rem 1rem;
+            }
+            
+            .table-header :nth-child(3),
+            .table-header :nth-child(4),
+            .table-row :nth-child(3),
+            .table-row :nth-child(4) {
+                display: none;
+            }
+        }
+        
+        /* Category colors */
+        .urgent-color { background-color: #dc2626; }
+        .meeting-color { background-color: #0284c7; }
+        .important-color { background-color: #16a34a; }
+        .job_related-color { background-color: #7c3aed; }
+        .follow_up-color { background-color: #ea580c; }
+        .promotion-color { background-color: #db2777; }
+        .useless-color { background-color: #6b7280; }
+        .unknown-color { background-color: #475569; }
+        
+        .urgent-fill { background-color: #dc2626; }
+        .meeting-fill { background-color: #0284c7; }
+        .important-fill { background-color: #16a34a; }
+        .job_related-fill { background-color: #7c3aed; }
+        .follow_up-fill { background-color: #ea580c; }
+        .promotion-fill { background-color: #db2777; }
+        .useless-fill { background-color: #6b7280; }
+        .unknown-fill { background-color: #475569; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-brain logo-icon"></i>
+            <span>InboxAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-link">Dashboard</a>
+            <a href="#" class="nav-link">Inbox</a>
+            <a href="#" class="nav-link active">Analytics</a>
+            <a href="#" class="nav-link">Settings</a>
+            <div class="user-profile">
+                <div class="user-avatar">AS</div>
+                <span>Alex Smith</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Analytics Header -->
+    <div class="analytics-header">
+        <h1 class="analytics-title">
+            <i class="fas fa-chart-line"></i>
+            Email Analytics Dashboard
+        </h1>
+        <p class="analytics-subtitle">
+            Gain insights into your email habits, category distribution, and productivity patterns. AI-powered recommendations help you optimize your email workflow.
+        </p>
+        
+        <div class="time-filters">
+            <button class="time-filter-btn active" data-period="7d">Last 7 Days</button>
+            <button class="time-filter-btn" data-period="30d">Last 30 Days</button>
+            <button class="time-filter-btn" data-period="90d">Last 90 Days</button>
+            <button class="time-filter-btn" data-period="ytd">Year to Date</button>
+            <button class="time-filter-btn" data-period="all">All Time</button>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon inbox">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <div class="stat-trend trend-up">
+                    <i class="fas fa-arrow-up"></i>
+                    12%
+                </div>
+            </div>
+            <div class="stat-value" id="total-emails">2,847</div>
+            <div class="stat-label">Total Emails Processed</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon time">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-trend trend-down">
+                    <i class="fas fa-arrow-down"></i>
+                    8%
+                </div>
+            </div>
+            <div class="stat-value" id="avg-response">4.2</div>
+            <div class="stat-label">Avg. Response Time (Hours)</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon category">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <div class="stat-trend trend-up">
+                    <i class="fas fa-arrow-up"></i>
+                    5%
+                </div>
+            </div>
+            <div class="stat-value" id="accuracy">94%</div>
+            <div class="stat-label">AI Categorization Accuracy</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-header">
+                <div class="stat-icon sentiment">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <div class="stat-trend trend-neutral">
+                    <i class="fas fa-minus"></i>
+                    0%
+                </div>
+            </div>
+            <div class="stat-value" id="sentiment">78%</div>
+            <div class="stat-label">Positive Sentiment Score</div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+        <!-- Email Volume Chart -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="fas fa-envelope"></i>
+                    Email Volume Over Time
+                </h3>
+                <div class="chart-actions">
+                    <button class="chart-btn" data-chart="volume" data-type="line">Line</button>
+                    <button class="chart-btn active" data-chart="volume" data-type="bar">Bar</button>
+                </div>
+            </div>
+            <div class="chart-canvas-container">
+                <canvas id="volumeChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Category Distribution Chart -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3 class="chart-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Category Distribution
+                </h3>
+                <div class="chart-actions">
+                    <button class="chart-btn active" data-chart="category" data-type="pie">Pie</button>
+                    <button class="chart-btn" data-chart="category" data-type="doughnut">Doughnut</button>
+                </div>
+            </div>
+            <div class="chart-canvas-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Distribution Details -->
+    <div class="category-distribution">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-tags"></i>
+            Category Breakdown
+        </h3>
+        
+        <div class="category-list" id="categoryList">
+            <!-- Categories will be dynamically populated -->
+        </div>
+    </div>
+
+    <!-- Sender Analytics -->
+    <div class="sender-analytics">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-users"></i>
+            Top Senders Analysis
+        </h3>
+        
+        <div class="sender-table">
+            <div class="table-header">
+                <div>Sender</div>
+                <div>Emails</div>
+                <div>Avg. Response Time</div>
+                <div>Category</div>
+            </div>
+            
+            <div class="table-row">
+                <div class="sender-info">
+                    <div class="sender-avatar-small" style="background: linear-gradient(135deg, #f87171, #dc2626);">JD</div>
+                    <div>
+                        <div style="font-weight: 500;">John Doe</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">john@example.com</div>
+                    </div>
+                </div>
+                <div>47</div>
+                <div>2.1h</div>
+                <div><span class="email-tag" style="background-color: #fef2f2; color: #dc2626; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Urgent</span></div>
+            </div>
+            
+            <div class="table-row">
+                <div class="sender-info">
+                    <div class="sender-avatar-small" style="background: linear-gradient(135deg, #38bdf8, #0284c7);">SW</div>
+                    <div>
+                        <div style="font-weight: 500;">Sarah Williams</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">sarah@company.com</div>
+                    </div>
+                </div>
+                <div>32</div>
+                <div>6.5h</div>
+                <div><span class="email-tag" style="background-color: #f0f9ff; color: #0284c7; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Meeting</span></div>
+            </div>
+            
+            <div class="table-row">
+                <div class="sender-info">
+                    <div class="sender-avatar-small" style="background: linear-gradient(135deg, #4ade80, #16a34a);">MJ</div>
+                    <div>
+                        <div style="font-weight: 500;">Michael Johnson</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">michael@partner.net</div>
+                    </div>
+                </div>
+                <div>28</div>
+                <div>1.8h</div>
+                <div><span class="email-tag" style="background-color: #f0fdf4; color: #16a34a; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Important</span></div>
+            </div>
+            
+            <div class="table-row">
+                <div class="sender-info">
+                    <div class="sender-avatar-small" style="background: linear-gradient(135deg, #a78bfa, #7c3aed);">KT</div>
+                    <div>
+                        <div style="font-weight: 500;">Katherine Taylor</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">ktaylor@client.org</div>
+                    </div>
+                </div>
+                <div>24</div>
+                <div>8.2h</div>
+                <div><span class="email-tag" style="background-color: #f5f3ff; color: #7c3aed; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Job Related</span></div>
+            </div>
+            
+            <div class="table-row">
+                <div class="sender-info">
+                    <div class="sender-avatar-small" style="background: linear-gradient(135deg, #fdba74, #ea580c);">RB</div>
+                    <div>
+                        <div style="font-weight: 500;">Robert Brown</div>
+                        <div style="font-size: 0.85rem; color: #64748b;">rbrown@provider.com</div>
+                    </div>
+                </div>
+                <div>19</div>
+                <div>12.4h</div>
+                <div><span class="email-tag" style="background-color: #fff7ed; color: #ea580c; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem;">Follow Up</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Recommendations -->
+    <div class="ai-recommendations">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-robot"></i>
+            AI-Powered Recommendations
+        </h3>
+        
+        <div class="recommendations-grid">
+            <div class="recommendation-card">
+                <div class="recommendation-header">
+                    <div class="recommendation-icon efficiency">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="recommendation-title">Improve Response Time</div>
+                </div>
+                <div class="recommendation-content">
+                    Your average response time to urgent emails is 4.2 hours. Setting aside 15 minutes twice daily for urgent emails could reduce this to under 2 hours.
+                </div>
+                <div class="recommendation-actions">
+                    <button class="action-btn primary">Set Up Schedule</button>
+                    <button class="action-btn secondary">Learn More</button>
+                </div>
+            </div>
+            
+            <div class="recommendation-card">
+                <div class="recommendation-header">
+                    <div class="recommendation-icon organization">
+                        <i class="fas fa-filter"></i>
+                    </div>
+                    <div class="recommendation-title">Automate Promotional Emails</div>
+                </div>
+                <div class="recommendation-content">
+                    18% of your emails are promotional. Create an automated rule to move promotional emails to a separate folder and review weekly instead of daily.
+                </div>
+                <div class="recommendation-actions">
+                    <button class="action-btn primary">Create Rule</button>
+                    <button class="action-btn secondary">View Examples</button>
+                </div>
+            </div>
+            
+            <div class="recommendation-card">
+                <div class="recommendation-header">
+                    <div class="recommendation-icon productivity">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="recommendation-title">Focus Time Optimization</div>
+                </div>
+                <div class="recommendation-content">
+                    Analysis shows you're most productive between 9-11 AM. Consider scheduling focused email response sessions during this time for maximum efficiency.
+                </div>
+                <div class="recommendation-actions">
+                    <button class="action-btn primary">Block Calendar</button>
+                    <button class="action-btn secondary">View Analysis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>InboxAI Analytics Dashboard v2.1 • AI-powered email insights • © 2023 All rights reserved</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            <strong>Data Period:</strong> Last 30 days • <strong>Last Updated:</strong> <span id="lastUpdated">Today, 10:30 AM</span>
+        </p>
+    </footer>
+
+    <script>
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            populateCategoryList();
+            setupEventListeners();
+            updateLastUpdated();
+        });
+        
+        // Chart configuration
+        let volumeChart, categoryChart;
+        
+        function initializeCharts() {
+            // Volume Chart Data
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+            volumeChart = new Chart(volumeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Emails Received',
+                        data: [42, 38, 55, 47, 52, 28, 31],
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Emails Sent',
+                        data: [18, 22, 25, 19, 24, 12, 8],
+                        backgroundColor: 'rgba(139, 92, 246, 0.7)',
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Emails'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Category Chart Data
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            categoryChart = new Chart(categoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Urgent', 'Meeting', 'Important', 'Job Related', 'Follow Up', 'Promotion', 'Useless', 'Unknown'],
+                    datasets: [{
+                        data: [12, 18, 22, 15, 9, 14, 7, 3],
+                        backgroundColor: [
+                            '#dc2626',
+                            '#0284c7',
+                            '#16a34a',
+                            '#7c3aed',
+                            '#ea580c',
+                            '#db2777',
+                            '#6b7280',
+                            '#475569'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Populate category list with data
+        function populateCategoryList() {
+            const categories = [
+                { name: 'Urgent', count: 47, percentage: 12, colorClass: 'urgent' },
+                { name: 'Meeting', count: 68, percentage: 18, colorClass: 'meeting' },
+                { name: 'Important', count: 84, percentage: 22, colorClass: 'important' },
+                { name: 'Job Related', count: 57, percentage: 15, colorClass: 'job_related' },
+                { name: 'Follow Up', count: 34, percentage: 9, colorClass: 'follow_up' },
+                { name: 'Promotion', count: 53, percentage: 14, colorClass: 'promotion' },
+                { name: 'Useless', count: 26, percentage: 7, colorClass: 'useless' },
+                { name: 'Unknown', count: 11, percentage: 3, colorClass: 'unknown' }
+            ];
+            
+            const categoryList = document.getElementById('categoryList');
+            categoryList.innerHTML = '';
+            
+            categories.forEach(cat => {
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'category-item';
+                categoryItem.innerHTML = `
+                    <div class="category-color ${cat.colorClass}-color"></div>
+                    <div class="category-info">
+                        <div class="category-name">${cat.name}</div>
+                        <div class="category-stats">
+                            <span>${cat.count} emails</span>
+                            <span>${cat.percentage}%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-fill ${cat.colorClass}-fill" style="width: ${cat.percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                categoryList.appendChild(categoryItem);
+            });
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Time filter buttons
+            const timeFilterBtns = document.querySelectorAll('.time-filter-btn');
+            timeFilterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    timeFilterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const period = this.getAttribute('data-period');
+                    updateChartsByPeriod(period);
+                    updateStatsByPeriod(period);
+                });
+            });
+            
+            // Chart type buttons
+            const chartBtns = document.querySelectorAll('.chart-btn');
+            chartBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const chart = this.getAttribute('data-chart');
+                    const type = this.getAttribute('data-type');
+                    
+                    // Update button states
+                    document.querySelectorAll(`[data-chart="${chart}"]`).forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update chart type
+                    if (chart === 'volume') {
+                        volumeChart.config.type = type;
+                        volumeChart.update();
+                    } else if (chart === 'category') {
+                        categoryChart.config.type = type;
+                        categoryChart.update();
+                    }
+                });
+            });
+            
+            // Animate stats on scroll
+            animateStatsOnScroll();
+        }
+        
+        // Update charts based on selected time period
+        function updateChartsByPeriod(period) {
+            // This would typically fetch new data from the server
+            // For demo purposes, we'll simulate data changes
+            
+            let volumeData, categoryData;
+            
+            switch(period) {
+                case '7d':
+                    volumeData = {
+                        received: [42, 38, 55, 47, 52, 28, 31],
+                        sent: [18, 22, 25, 19, 24, 12, 8]
+                    };
+                    categoryData = [12, 18, 22, 15, 9, 14, 7, 3];
+                    break;
+                case '30d':
+                    volumeData = {
+                        received: [145, 138, 155, 147, 162, 128, 121, 135, 142, 130, 148, 139, 125, 132, 141, 137, 152, 129, 136, 140, 131, 126, 133, 144, 127, 134, 149, 143, 146, 150],
+                        sent: [65, 72, 75, 69, 74, 62, 58, 68, 71, 66, 73, 70, 64, 67, 72, 69, 74, 63, 68, 71, 65, 64, 67, 73, 62, 66, 74, 70, 72, 75]
+                    };
+                    categoryData = [47, 68, 84, 57, 34, 53, 26, 11];
+                    break;
+                case '90d':
+                    volumeData = {
+                        received: [450, 438, 455, 447, 462, 428, 421],
+                        sent: [195, 202, 205, 199, 204, 192, 188]
+                    };
+                    categoryData = [142, 208, 254, 171, 102, 159, 78, 33];
+                    break;
+                default:
+                    volumeData = {
+                        received: [42, 38, 55, 47, 52, 28, 31],
+                        sent: [18, 22, 25, 19, 24, 12, 8]
+                    };
+                    categoryData = [12, 18, 22, 15, 9, 14, 7, 3];
+            }
+            
+            // Update volume chart
+            if (volumeChart) {
+                volumeChart.data.datasets[0].data = period === '7d' || period === '30d' ? 
+                    volumeData.received.slice(-7) : volumeData.received;
+                volumeChart.data.datasets[1].data = period === '7d' || period === '30d' ? 
+                    volumeData.sent.slice(-7) : volumeData.sent;
+                volumeChart.update();
+            }
+            
+            // Update category chart
+            if (categoryChart) {
+                categoryChart.data.datasets[0].data = categoryData;
+                categoryChart.update();
+            }
+            
+            // Update category list
+            updateCategoryListByPeriod(period);
+        }
+        
+        // Update stats based on selected time period
+        function updateStatsByPeriod(period) {
+            let stats;
+            
+            switch(period) {
+                case '7d':
+                    stats = { total: 284, response: 4.2, accuracy: 94, sentiment: 78 };
+                    break;
+                case '30d':
+                    stats = { total: 2847, response: 4.2, accuracy: 94, sentiment: 78 };
+                    break;
+                case '90d':
+                    stats = { total: 8541, response: 4.5, accuracy: 93, sentiment: 76 };
+                    break;
+                case 'ytd':
+                    stats = { total: 12547, response: 4.8, accuracy: 92, sentiment: 75 };
+                    break;
+                case 'all':
+                    stats = { total: 32874, response: 5.1, accuracy: 91, sentiment: 74 };
+                    break;
+                default:
+                    stats = { total: 2847, response: 4.2, accuracy: 94, sentiment: 78 };
+            }
+            
+            // Animate the stat updates
+            animateStatValue('total-emails', stats.total);
+            animateStatValue('avg-response', stats.response);
+            animateStatValue('accuracy', stats.accuracy + '%');
+            animateStatValue('sentiment', stats.sentiment + '%');
+        }
+        
+        // Update category list based on period
+        function updateCategoryListByPeriod(period) {
+            // Simulate different data for different periods
+            let categories;
+            
+            if (period === '7d') {
+                categories = [
+                    { name: 'Urgent', count: 12, percentage: 12, colorClass: 'urgent' },
+                    { name: 'Meeting', count: 18, percentage: 18, colorClass: 'meeting' },
+                    { name: 'Important', count: 22, percentage: 22, colorClass: 'important' },
+                    { name: 'Job Related', count: 15, percentage: 15, colorClass: 'job_related' },
+                    { name: 'Follow Up', count: 9, percentage: 9, colorClass: 'follow_up' },
+                    { name: 'Promotion', count: 14, percentage: 14, colorClass: 'promotion' },
+                    { name: 'Useless', count: 7, percentage: 7, colorClass: 'useless' },
+                    { name: 'Unknown', count: 3, percentage: 3, colorClass: 'unknown' }
+                ];
+            } else {
+                categories = [
+                    { name: 'Urgent', count: 47, percentage: 12, colorClass: 'urgent' },
+                    { name: 'Meeting', count: 68, percentage: 18, colorClass: 'meeting' },
+                    { name: 'Important', count: 84, percentage: 22, colorClass: 'important' },
+                    { name: 'Job Related', count: 57, percentage: 15, colorClass: 'job_related' },
+                    { name: 'Follow Up', count: 34, percentage: 9, colorClass: 'follow_up' },
+                    { name: 'Promotion', count: 53, percentage: 14, colorClass: 'promotion' },
+                    { name: 'Useless', count: 26, percentage: 7, colorClass: 'useless' },
+                    { name: 'Unknown', count: 11, percentage: 3, colorClass: 'unknown' }
+                ];
+            }
+            
+            const categoryList = document.getElementById('categoryList');
+            categoryList.innerHTML = '';
+            
+            categories.forEach(cat => {
+                const categoryItem = document.createElement('div');
+                categoryItem.className = 'category-item';
+                categoryItem.innerHTML = `
+                    <div class="category-color ${cat.colorClass}-color"></div>
+                    <div class="category-info">
+                        <div class="category-name">${cat.name}</div>
+                        <div class="category-stats">
+                            <span>${cat.count} emails</span>
+                            <span>${cat.percentage}%</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-fill ${cat.colorClass}-fill" style="width: ${cat.percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                categoryList.appendChild(categoryItem);
+            });
+        }
+        
+        // Animate stat value change
+        function animateStatValue(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const currentValue = parseFloat(element.textContent.replace(/[^\d.]/g, ''));
+            const isPercentage = element.textContent.includes('%');
+            targetValue = parseFloat(targetValue);
+            
+            if (currentValue === targetValue) return;
+            
+            const duration = 800;
+            const stepTime = 20;
+            const steps = duration / stepTime;
+            const increment = (targetValue - currentValue) / steps;
+            let currentStep = 0;
+            
+            const timer = setInterval(() => {
+                currentStep++;
+                const newValue = currentValue + (increment * currentStep);
+                
+                if (currentStep >= steps) {
+                    element.textContent = isPercentage ? targetValue + '%' : targetValue.toLocaleString();
+                    clearInterval(timer);
+                } else {
+                    element.textContent = isPercentage ? 
+                        Math.round(newValue) + '%' : 
+                        Math.round(newValue).toLocaleString();
+                }
+            }, stepTime);
+        }
+        
+        // Animate stats when they come into view
+        function animateStatsOnScroll() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const statCards = entry.target.querySelectorAll('.stat-value');
+                        statCards.forEach(card => {
+                            const originalValue = card.textContent;
+                            const numericValue = parseFloat(originalValue.replace(/[^\d.]/g, ''));
+                            const isPercentage = originalValue.includes('%');
+                            
+                            // Animate from 0 to the current value
+                            card.textContent = isPercentage ? '0%' : '0';
+                            animateStatValue(card.id, isPercentage ? numericValue + '%' : numericValue);
+                        });
+                        
+                        // Stop observing after animation
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            const statsGrid = document.querySelector('.stats-grid');
+            if (statsGrid) {
+                observer.observe(statsGrid);
+            }
+        }
+        
+        // Update last updated time
+        function updateLastUpdated() {
+            const now = new Date();
+            const formattedDate = now.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            document.getElementById('lastUpdated').textContent = formattedDate;
+        }
+        
+        // Simulate data refresh
+        setInterval(() => {
+            // Update last updated time
+            updateLastUpdated();
+            
+            // Simulate small data changes for demo purposes
+            const activePeriodBtn = document.querySelector('.time-filter-btn.active');
+            if (activePeriodBtn) {
+                updateChartsByPeriod(activePeriodBtn.getAttribute('data-period'));
+            }
+        }, 30000); // Update every 30 seconds
+    </script>
+</body>
+</html>
